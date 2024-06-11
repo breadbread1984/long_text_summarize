@@ -114,21 +114,16 @@ def summarize(text: str,
     print(f"Splitting the text into {len(text_chunks)} chunks to be summarized.")
     print(f"Chunk lengths are {[len(tokenize(x)) for x in text_chunks]}")
 
-  # set system message
-  system_message_content = "Rewrite this text in summarized form."
-  if additional_instructions is not None:
-    system_message_content += f"\n\n{additional_instructions}"
-
   accumulated_summaries = []
   for chunk in tqdm(text_chunks):
     if summarize_recursively and accumulated_summaries:
       # Creating a structured prompt for recursive summarization
       accumulated_summaries_string = '\n\n'.join(accumulated_summaries)
-      chain = summarize_template(tokenizer, accumulated = True) | llm.bind(stop = ["<|eot_id|>"])
+      chain = summarize_template(tokenizer, additional_instructions, accumulated = True) | llm.bind(stop = ["<|eot_id|>"])
       response = chain.invoke({'accumulated_summaries_string': accumulated_summaries_string, 'chunk': chunk})
     else:
       # Directly passing the chunk for summarization without recursive context
-      chain = summarize_template(tokenizer, accumulated = False) | llm.bind(stop = ["<|eot_id|>"])
+      chain = summarize_template(tokenizer, additional_instructions, accumulated = False) | llm.bind(stop = ["<|eot_id|>"])
       response = chain.invoke({'chunk': chunk})
     if response.startswith('assistant\n\n'):
       response = response.replace('assistant\n\n','')
