@@ -1,9 +1,11 @@
 #!/usr/bin/python3
 
+# tokenize string
 def tokenize(tokenizer, text: str) -> List[str]:
   encoding = tokenizer(text, return_tensors = 'np')
   return encoding['input_ids'][0]
 
+# 
 def combine_chunks_with_no_minimum(
   chunks: List[str],
   max_tokens: int,
@@ -21,11 +23,11 @@ def combine_chunks_with_no_minimum(
   candidate_indices = []
   for chunk_i, chunk in enumerate(chunks):
     chunk_with_header = [chunk] if header is None else [header, chunk]
-    if len(tokenize(chunk_delimiter.join(chunk_with_header))) > max_tokens:
+    if len(tokenize(tokenizer, chunk_delimiter.join(chunk_with_header))) > max_tokens:
       print(f"warning: chunk overflow")
       if (
         add_ellipsis_for_overflow
-        and len(tokenize(chunk_delimiter.join(candidate + ["..."]))) <= max_tokens
+        and len(tokenize(tokenizer, chunk_delimiter.join(candidate + ["..."]))) <= max_tokens
       ):
         candidate.append("...")
         dropped_chunk_count += 1
