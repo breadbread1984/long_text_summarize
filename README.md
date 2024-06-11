@@ -22,3 +22,8 @@ python3 main.py --input <path/to/document> [--locally] [--recursively] [--instru
 | recursively | whether to summarize multiple chunks to one summary |
 | instruction | extra instruction to LLM |
 
+# Example
+
+```shell
+python3 main.py --input test/US11258057.txt --instruction "Just focus on recipe of electrolyte and numerical data of conductivity" --recursively
+```
