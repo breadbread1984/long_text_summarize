@@ -25,5 +25,5 @@ python3 main.py --input <path/to/document> [--locally] [--recursively] [--instru
 # Example
 
 ```shell
-python3 main.py --input test/US11258057.txt --instruction "Just focus on recipe of electrolyte and numerical data of conductivity" --recursively
+python3 main.py --input test/US11258057.txt --instruction "Just focus on starting materials in the given examples, chemical formula of electrolyte and numerical data of conductivity" --recursively
 ```
