@@ -130,6 +130,8 @@ def summarize(text: str,
       # Directly passing the chunk for summarization without recursive context
       chain = summarize_template(tokenizer, accumulated = False) | llm.bind(stop = ["<|eot_id|>"])
       response = chain.invoke({'chunk': chunk})
+    if response.startswith('assistant\n\n'):
+      response = response.replace('assistant\n\n','')
 
     # Assuming this function gets the completion and works as expected
     accumulated_summaries.append(response)
