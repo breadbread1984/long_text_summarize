@@ -124,7 +124,7 @@ def summarize(text: str,
       # Creating a structured prompt for recursive summarization
       accumulated_summaries_string = '\n\n'.join(accumulated_summaries)
       chain = summarize_template(tokenizer, accumulated = True) | llm
-      response = chain.invoke({'accumulated_summaries_string': accumulated_summaries_string}, 'chunk': chunk)
+      response = chain.invoke({'accumulated_summaries_string': accumulated_summaries_string, 'chunk': chunk})
     else:
       # Directly passing the chunk for summarization without recursive context
       chain = summarize_template(tokenizer, accumulated = False) | llm
