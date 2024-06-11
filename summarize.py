@@ -65,7 +65,8 @@ def summarize(text: str,
               minimum_chunk_size: Optional[int] = 500,
               chunk_delimiter: str = ".",
               summarize_recursively=False,
-              verbose=False):
+              verbose=False,
+              tokenizer=None):
   """
   Summarizes a given text by splitting it into chunks, each of which is summarized individually.
   The level of detail in the summary can be adjusted, and the process can optionally be made recursive.
@@ -93,14 +94,14 @@ def summarize(text: str,
   assert 0 <= detail <= 1
 
   # interpolate the number of chunks based to get specified level of detail
-  max_chunks = len(chunk_on_delimiter(text, minimum_chunk_size, chunk_delimiter))
+  max_chunks = len(chunk_on_delimiter(text, minimum_chunk_size, chunk_delimiter, tokenizer = tokenizer))
   min_chunks = 1
   num_chunks = int(min_chunks + detail * (max_chunks - min_chunks))
 
   # adjust chunk_size based on interpolated number of chunks
   document_length = len(tokenize(text))
   chunk_size = max(minimum_chunk_size, document_length // num_chunks)
-  text_chunks = chunk_on_delimiter(text, chunk_size, chunk_delimiter)
+  text_chunks = chunk_on_delimiter(text, chunk_size, chunk_delimiter, tokenizer = tokenizer)
   if verbose:
     print(f"Splitting the text into {len(text_chunks)} chunks to be summarized.")
     print(f"Chunk lengths are {[len(tokenize(x)) for x in text_chunks]}")
@@ -134,3 +135,4 @@ def summarize(text: str,
   final_summary = '\n\n'.join(accumulated_summaries)
 
   return final_summary
+
