@@ -3,14 +3,6 @@
 from tqdm import tqdm
 from prompts import summarize_template
 
-def get_chat_completion(messages, model='gpt-4-turbo'):
-  response = client.chat.completions.create(
-        model=model,
-        messages=messages,
-        temperature=0,
-  )
-  return response.choices[0].message.content
-
 # tokenize string
 def tokenize(tokenizer, text: str) -> List[str]:
   encoding = tokenizer(text, return_tensors = 'np')
@@ -76,7 +68,6 @@ def chunk_on_delimiter(input_string: str, max_tokens: int, delimiter: str, token
 
 def summarize(text: str,
               detail: float = 0,
-              model: str = 'gpt-4-turbo',
               additional_instructions: Optional[str] = None,
               minimum_chunk_size: Optional[int] = 500,
               chunk_delimiter: str = ".",
@@ -92,7 +83,6 @@ def summarize(text: str,
   - text (str): The text to be summarized.
   - detail (float, optional): A value between 0 and 1 indicating the desired level of detail in the summary.
     0 leads to a higher level summary, and 1 results in a more detailed summary. Defaults to 0.
-  - model (str, optional): The model to use for generating summaries. Defaults to 'gpt-3.5-turbo'.
   - additional_instructions (Optional[str], optional): Additional instructions to provide to the model for customizing summaries.
   - minimum_chunk_size (Optional[int], optional): The minimum size for text chunks. Defaults to 500.
   - chunk_delimiter (str, optional): The delimiter used to split the text into chunks. Defaults to ".".
