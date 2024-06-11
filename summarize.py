@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+from typing import List, Optional, Tuple
 from tqdm import tqdm
 from prompts import summarize_template
 
