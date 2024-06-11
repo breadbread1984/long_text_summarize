@@ -25,7 +25,7 @@ def main(unused_argv):
   if ext == '.txt':
     loader = TextLoader(FLAGS.input)
   elif ext == '.pdf':
-    loader = UnstructuredPDFLoader(FLAGS.input, mode = 'single', strategy = "fast")
+    loader = UnstructuredPDFLoader(FLAGS.input, mode = 'single', strategy = "hi_res")
   elif ext in [".htm", ".html"]:
     loader = UnstructuredHTMLLoader(FLAGS.input)
   else:
