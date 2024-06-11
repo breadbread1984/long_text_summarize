@@ -1,11 +1,23 @@
 #!/usr/bin/python3
 
+from tqdm import tqdm
+from prompts import summarize_template
+
+def get_chat_completion(messages, model='gpt-4-turbo'):
+  response = client.chat.completions.create(
+        model=model,
+        messages=messages,
+        temperature=0,
+  )
+  return response.choices[0].message.content
+
 # tokenize string
 def tokenize(tokenizer, text: str) -> List[str]:
   encoding = tokenizer(text, return_tensors = 'np')
   return encoding['input_ids'][0]
 
-# 
+# combine short chunks to list of longer chunks, every longer chunks have no longer than max_tokens tokens
+# if single short chunk is longer than max_tokens, it is dropped
 def combine_chunks_with_no_minimum(
   chunks: List[str],
   max_tokens: int,
@@ -50,6 +62,8 @@ def combine_chunks_with_no_minimum(
     output_indices.append(candidate_indices)
   return output, output_indices, dropped_chunk_count
 
+# concatenate short chunks into longer chunks
+# add delimiter after every longer chunk
 def chunk_on_delimiter(input_string: str, max_tokens: int, delimiter: str, tokenizer) -> List[str]:
   chunks = input_string.split(delimiter)
   combined_chunks, _, dropped_chunk_count = combine_chunks_with_no_minimum(
@@ -68,6 +82,7 @@ def summarize(text: str,
               chunk_delimiter: str = ".",
               summarize_recursively=False,
               verbose=False,
+              llm=None,
               tokenizer=None):
   """
   Summarizes a given text by splitting it into chunks, each of which is summarized individually.
@@ -101,7 +116,7 @@ def summarize(text: str,
   num_chunks = int(min_chunks + detail * (max_chunks - min_chunks))
 
   # adjust chunk_size based on interpolated number of chunks
-  document_length = len(tokenize(text))
+  document_length = len(tokenize(tokenizer, text))
   chunk_size = max(minimum_chunk_size, document_length // num_chunks)
   text_chunks = chunk_on_delimiter(text, chunk_size, chunk_delimiter, tokenizer = tokenizer)
   if verbose:
@@ -118,19 +133,14 @@ def summarize(text: str,
     if summarize_recursively and accumulated_summaries:
       # Creating a structured prompt for recursive summarization
       accumulated_summaries_string = '\n\n'.join(accumulated_summaries)
-      user_message_content = f"Previous summaries:\n\n{accumulated_summaries_string}\n\nText to summarize next:\n\n{chunk}"
+      chain = summarize_template(tokenizer, accumulated = True) | llm
+      response = chain.invoke({'accumulated_summaries_string': accumulated_summaries_string}, 'chunk': chunk)
     else:
       # Directly passing the chunk for summarization without recursive context
-      user_message_content = chunk
-
-    # Constructing messages based on whether recursive summarization is applied
-    messages = [
-      {"role": "system", "content": system_message_content},
-      {"role": "user", "content": user_message_content}
-    ]
+      chain = summarize_template(tokenizer, accumulated = False) | llm
+      response = chain.invoke({'chunk': chunk})
 
     # Assuming this function gets the completion and works as expected
-    response = get_chat_completion(messages, model=model)
     accumulated_summaries.append(response)
 
   # Compile final summary from partial summaries
