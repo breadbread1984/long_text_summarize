@@ -32,7 +32,7 @@ def main(unused_argv):
     raise Exception('unknown format!')
   docs = list()
   docs.extend(loader.load())
-  text = ''.join(docs)
+  text = ''.join([doc.page_content for doc in docs])
   summary = summarize(text, detail = FLAGS.detail, llm = llm, tokenizer = tokenizer)
   print(summary)
 

@@ -5,6 +5,7 @@ from huggingface_hub import login
 from transformers import AutoTokenizer
 from langchain_community.llms import HuggingFaceEndpoint
 from langchain_community.llms.huggingface_pipeline import HuggingFacePipeline
+import config
 
 def Llama3(locally = False):
   login(token = config.huggingface_token)
