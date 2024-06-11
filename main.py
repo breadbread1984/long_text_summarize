@@ -14,6 +14,7 @@ def add_options():
   flags.DEFINE_boolean('locally', default = False, help = 'run model locally')
   flags.DEFINE_float('detail', default = 0.5, help = 'percentage of detail')
   flags.DEFINE_boolean('recursively', default = False, help = 'summary multiple chunks into one summary')
+  flags.DEFINE_string('instruction', default = None, help = 'extra instruction')
 
 def main(unused_argv):
   if FLAGS.model == 'llama3':
@@ -34,7 +35,7 @@ def main(unused_argv):
   docs = list()
   docs.extend(loader.load())
   text = ''.join([doc.page_content for doc in docs])
-  summary = summarize(text, detail = FLAGS.detail, llm = llm, tokenizer = tokenizer, summarize_recursively = FLAGS.recursively)
+  summary = summarize(text, detail = FLAGS.detail, llm = llm, tokenizer = tokenizer, summarize_recursively = FLAGS.recursively, additional_instructions = FLAGS.instruction)
   print(summary)
 
 if __name__ == "__main__":
